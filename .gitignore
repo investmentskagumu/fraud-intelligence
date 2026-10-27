@@ -1,0 +1,44 @@
+﻿# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# IDE and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Large datasets
+data/raw/*
+data/interim/*
+data/processed/*
+
+# Generated outputs
+outputs/figures/*
+outputs/metrics/*
+outputs/predictions/*
+outputs/tables/*
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Python test and coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/

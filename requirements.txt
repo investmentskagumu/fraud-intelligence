@@ -1,0 +1,8 @@
+﻿pandas
+numpy
+scikit-learn
+scipy
+matplotlib
+xgboost==3.4.1
+lightgbm==4.7.0
+plotly

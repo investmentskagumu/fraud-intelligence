@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FRAUD INTELLIGENCE 001 — Dashboard</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root{--bg:#0b1220;--panel:#111c2e;--panel2:#17243a;--text:#e5edf7;--muted:#9caec4;--line:#26364e;--blue:#38bdf8;--red:#fb7185;--green:#34d399;--gold:#fbbf24;--purple:#a78bfa}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Segoe UI,Arial,sans-serif}header{padding:28px 4vw;background:linear-gradient(120deg,#101a2d,#172d49);border-bottom:1px solid var(--line)}header h1{margin:0;font-size:clamp(24px,3vw,36px)}header p,.muted{color:var(--muted)}main{width:94%;max-width:1600px;margin:24px auto 40px}.section{margin:30px 0}h2{font-size:21px;border-left:4px solid var(--blue);padding-left:12px}h3{margin-top:2px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:14px}.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 24px #0002}.card{padding:18px}.label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.07em}.value{font-size:clamp(22px,2.4vw,30px);font-weight:700;margin-top:10px;overflow-wrap:anywhere}.panel{padding:18px;min-width:0}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.chart{height:350px;width:100%}.tall{height:420px}.table-wrap{overflow:auto;max-height:500px}.data-table{width:100%;border-collapse:collapse;font-size:13px}.data-table th,.data-table td{padding:10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}.data-table th{background:var(--panel2);position:sticky;top:0}.notice{background:#332a16;border:1px solid #6c5523;color:#f6dda0;padding:13px;border-radius:10px;line-height:1.5}.note-good{background:#102b27;border:1px solid #1e6254;color:#b7f7df;padding:13px;border-radius:10px;line-height:1.6}footer{text-align:center;color:var(--muted);padding:24px;border-top:1px solid var(--line);font-size:12px}@media(max-width:850px){.grid2{grid-template-columns:1fr}.chart{height:320px}}
+</style></head><body>
+<header><h1>FRAUD INTELLIGENCE 001</h1><p>Fraud Detection · Risk Intelligence · Model Evaluation</p></header><main>
+<section class="section"><h2>Executive Summary</h2><div class="cards">
+<div class="card"><div class="label">Transactions analysed</div><div class="value">1,048,575</div><p class="muted">data\raw\Synthetic_Financial_datasets_log.csv</p></div>
+<div class="card"><div class="label">Fraud transactions</div><div class="value">1,142</div></div>
+<div class="card"><div class="label">Fraud prevalence</div><div class="value">0.109%</div></div>
+<div class="card"><div class="label">Final selected model</div><div class="value">XGBoost</div></div>
+<div class="card"><div class="label">PR-AUC</div><div class="value">0.5526</div></div>
+<div class="card"><div class="label">Fraud recall</div><div class="value">100.00%</div></div>
+</div></section>
+<section class="section"><h2>Fraud Analysis</h2><p class="muted">These charts are calculated from the dataset found by this script.</p><div class="grid2">
+<div class="panel"><h3>Fraud Transactions by Type</h3><div id="fraudType" class="chart"></div></div>
+<div class="panel"><h3>Fraud Rate by Transaction Type</h3><div id="rateType" class="chart"></div></div>
+<div class="panel"><h3>Transaction Volume by Type</h3><div id="volumeType" class="chart"></div></div>
+<div class="panel"><h3>Fraud Across Simulation Steps</h3><div id="fraudSteps" class="chart"></div></div>
+<div class="panel"><h3>Fraud vs Legitimate by Amount Band</h3><div id="amountBands" class="chart tall"></div></div>
+</div></section>
+<section class="section"><h2>Model Performance</h2><div class="cards">
+<div class="card"><div class="label">Precision</div><div class="value">3.42%</div></div><div class="card"><div class="label">Recall</div><div class="value">100.00%</div></div><div class="card"><div class="label">F1-score</div><div class="value">0.0661</div></div><div class="card"><div class="label">ROC-AUC</div><div class="value">0.9606</div></div><div class="card"><div class="label">Decision threshold</div><div class="value">0.97</div><p class="muted">Validate for the selected model.</p></div>
+</div><div class="grid2" style="margin-top:16px"><div class="panel"><h3>Model Comparison — PR-AUC</h3><div id="modelPRAUC" class="chart tall"></div></div><div class="panel"><h3>Model Comparison — Precision and Recall</h3><div id="modelPR" class="chart tall"></div></div></div><div class="panel" style="margin-top:16px"><h3>Model Ranking Table</h3><div class="table-wrap"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>model</th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1_score</th>
+      <th>pr_auc</th>
+      <th>roc_auc</th>
+      <th>specificity</th>
+      <th>source</th>
+      <th>selection_score</th>
+      <th>selection_rank</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>XGBoost</td>
+      <td>0.0342</td>
+      <td>1.0000</td>
+      <td>0.0661</td>
+      <td>0.5526</td>
+      <td>0.9606</td>
+      <td>0.6661</td>
+      <td>Stage 16</td>
+      <td>0.5490</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>Logistic Regression - Balanced</td>
+      <td>0.0352</td>
+      <td>1.0000</td>
+      <td>0.0681</td>
+      <td>0.3961</td>
+      <td>0.9673</td>
+      <td>—</td>
+      <td>Stage 17</td>
+      <td>0.5114</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>Logistic Regression</td>
+      <td>0.0352</td>
+      <td>1.0000</td>
+      <td>0.0681</td>
+      <td>0.3961</td>
+      <td>0.9673</td>
+      <td>0.6762</td>
+      <td>Stage 15</td>
+      <td>0.5114</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <td>LightGBM</td>
+      <td>0.0117</td>
+      <td>1.0000</td>
+      <td>0.0231</td>
+      <td>0.3788</td>
+      <td>0.9319</td>
+      <td>0.0000</td>
+      <td>Stage 16</td>
+      <td>0.4903</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>Random Forest</td>
+      <td>0.0342</td>
+      <td>1.0000</td>
+      <td>0.0661</td>
+      <td>0.0686</td>
+      <td>0.9115</td>
+      <td>0.6660</td>
+      <td>Stage 16</td>
+      <td>0.4206</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td>Random Forest - Balanced</td>
+      <td>0.0307</td>
+      <td>1.0000</td>
+      <td>0.0597</td>
+      <td>0.0647</td>
+      <td>0.9061</td>
+      <td>—</td>
+      <td>Stage 17</td>
+      <td>0.4172</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>Decision Tree</td>
+      <td>0.0352</td>
+      <td>1.0000</td>
+      <td>0.0680</td>
+      <td>0.0352</td>
+      <td>0.8380</td>
+      <td>0.6759</td>
+      <td>Stage 15</td>
+      <td>0.4017</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>Gradient Boosting</td>
+      <td>0.0101</td>
+      <td>0.8667</td>
+      <td>0.0201</td>
+      <td>0.0103</td>
+      <td>0.4333</td>
+      <td>0.0000</td>
+      <td>Stage 16</td>
+      <td>0.2893</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>Dummy Classifier</td>
+      <td>0.0000</td>
+      <td>0.0000</td>
+      <td>0.0000</td>
+      <td>0.0117</td>
+      <td>0.5000</td>
+      <td>1.0000</td>
+      <td>Stage 15</td>
+      <td>0.0779</td>
+      <td>9</td>
+    </tr>
+  </tbody>
+</table></div></div>
+<div class="notice" style="margin-top:16px">Important consistency note: the Stage 26 selected model is XGBoost, but earlier risk scores and the threshold analysis were generated using Logistic Regression. Those risk outputs must not be described as XGBoost results until regenerated from XGBoost predictions.</div></section>
+<section class="section"><h2>Risk Intelligence</h2><div class="grid2"><div class="panel"><h3>Risk Summary Chart</h3><div id="riskChart" class="chart"></div><div class="table-wrap"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Risk_Category</th>
+      <th>Transactions</th>
+      <th>Average_Risk_Score</th>
+      <th>Maximum_Risk_Score</th>
+      <th>Investigation_Required</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Low</td>
+      <td>12000</td>
+      <td>0.1177</td>
+      <td>24.0032</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Medium</td>
+      <td>8</td>
+      <td>34.4695</td>
+      <td>47.5792</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>High</td>
+      <td>5494</td>
+      <td>85.6074</td>
+      <td>96.9997</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Critical</td>
+      <td>468</td>
+      <td>98.6271</td>
+      <td>100.0000</td>
+      <td>468</td>
+    </tr>
+  </tbody>
+</table></div></div><div class="panel"><h3>Stage 21 Feature Importance</h3><div id="importanceChart" class="chart tall"></div><p class="muted">If no feature-importance CSV was found, check the filename and column names from Stage 21.</p></div></div><div class="panel" style="margin-top:16px"><h3>Investigation Queue Summary</h3><div class="table-wrap"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Risk_Category</th>
+      <th>Investigation_Priority</th>
+      <th>Investigation_Queue</th>
+      <th>Transactions</th>
+      <th>Average_Risk_Score</th>
+      <th>Maximum_Risk_Score</th>
+      <th>Average_Fraud_Probability</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Critical</td>
+      <td>URGENT</td>
+      <td>ACTIVE</td>
+      <td>468</td>
+      <td>98.6271</td>
+      <td>100.0000</td>
+      <td>0.9863</td>
+    </tr>
+    <tr>
+      <td>High</td>
+      <td>HIGH</td>
+      <td>MONITOR</td>
+      <td>5494</td>
+      <td>85.6074</td>
+      <td>96.9997</td>
+      <td>0.8561</td>
+    </tr>
+    <tr>
+      <td>Medium</td>
+      <td>MODERATE</td>
+      <td>MONITOR</td>
+      <td>8</td>
+      <td>34.4695</td>
+      <td>47.5792</td>
+      <td>0.3447</td>
+    </tr>
+    <tr>
+      <td>Low</td>
+      <td>LOW</td>
+      <td>MONITOR</td>
+      <td>12000</td>
+      <td>0.1177</td>
+      <td>24.0032</td>
+      <td>0.0012</td>
+    </tr>
+  </tbody>
+</table></div></div></section>
+<section class="section"><h2>Temporal Validation & Stress Testing</h2><div class="grid2"><div class="panel"><h3>Temporal Validation Chart</h3><div id="temporalChart" class="chart"></div><div class="table-wrap"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Validation_Period</th>
+      <th>Training_Periods</th>
+      <th>Training_Transactions</th>
+      <th>Validation_Transactions</th>
+      <th>Validation_Fraud</th>
+      <th>Precision</th>
+      <th>Recall</th>
+      <th>F1</th>
+      <th>PR_AUC</th>
+      <th>ROC_AUC</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Period_2</td>
+      <td>Period_1</td>
+      <td>492483</td>
+      <td>272795</td>
+      <td>215</td>
+      <td>0.0166</td>
+      <td>0.3814</td>
+      <td>0.0319</td>
+      <td>0.0935</td>
+      <td>0.9209</td>
+    </tr>
+    <tr>
+      <td>Period_3</td>
+      <td>Period_1, Period_2</td>
+      <td>765278</td>
+      <td>265057</td>
+      <td>216</td>
+      <td>0.0071</td>
+      <td>0.7731</td>
+      <td>0.0140</td>
+      <td>0.1530</td>
+      <td>0.9271</td>
+    </tr>
+    <tr>
+      <td>Period_4</td>
+      <td>Period_1, Period_2, Period_3</td>
+      <td>1030335</td>
+      <td>270</td>
+      <td>270</td>
+      <td>1.0000</td>
+      <td>0.9444</td>
+      <td>0.9714</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Period_5</td>
+      <td>Period_1, Period_2, Period_3, Period_4</td>
+      <td>1030605</td>
+      <td>17970</td>
+      <td>210</td>
+      <td>0.0352</td>
+      <td>1.0000</td>
+      <td>0.0681</td>
+      <td>0.3960</td>
+      <td>0.9673</td>
+    </tr>
+  </tbody>
+</table></div></div><div class="panel"><h3>Stress Test Chart</h3><div id="stressChart" class="chart"></div><div class="table-wrap"><table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Scenario</th>
+      <th>Transactions</th>
+      <th>Fraud_Rate</th>
+      <th>Precision</th>
+      <th>Recall</th>
+      <th>F1</th>
+      <th>PR_AUC</th>
+      <th>ROC_AUC</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Baseline</td>
+      <td>17970</td>
+      <td>0.0117</td>
+      <td>0.0352</td>
+      <td>1.0000</td>
+      <td>0.0681</td>
+      <td>0.3960</td>
+      <td>0.9673</td>
+    </tr>
+    <tr>
+      <td>Increased_Fraud_Prevalence</td>
+      <td>18180</td>
+      <td>0.0231</td>
+      <td>0.0681</td>
+      <td>1.0000</td>
+      <td>0.1275</td>
+      <td>0.5160</td>
+      <td>0.9673</td>
+    </tr>
+    <tr>
+      <td>Reduced_Fraud_Prevalence</td>
+      <td>17865</td>
+      <td>0.0059</td>
+      <td>0.0179</td>
+      <td>1.0000</td>
+      <td>0.0352</td>
+      <td>0.3042</td>
+      <td>0.9683</td>
+    </tr>
+    <tr>
+      <td>Increased_Transaction_Amounts</td>
+      <td>17970</td>
+      <td>0.0117</td>
+      <td>0.0352</td>
+      <td>1.0000</td>
+      <td>0.0681</td>
+      <td>0.3328</td>
+      <td>0.9636</td>
+    </tr>
+    <tr>
+      <td>Reduced_Transaction_Amounts</td>
+      <td>17970</td>
+      <td>0.0117</td>
+      <td>0.0352</td>
+      <td>1.0000</td>
+      <td>0.0681</td>
+      <td>0.4631</td>
+      <td>0.9645</td>
+    </tr>
+  </tbody>
+</table></div></div></div><p class="notice" style="margin-top:16px">Stress tests are scenario experiments, not external validation. Check the decision threshold used in each stage before comparing model performance values.</p></section>
+<section class="section"><h2>Data and Method Notes</h2><div class="note-good"><b>Transactions:</b> 1,048,575<br><b>Legitimate transactions:</b> 1,047,433<br><b>Fraud transactions:</b> 1,142<br><b>isFlaggedFraud = 1:</b> 0<br><b>Leakage controls:</b> Never use <code>isFraud</code> as a predictor. Balance columns are excluded from the planned final predictive feature set. Account-behaviour features should be checked for prediction-time leakage.</div></section>
+</main><footer>FRAUD INTELLIGENCE 001 · Academic Research + Data Analytics + Machine Learning</footer>
+<script>
+const D={"fraudType": [{"type": "CASH_IN", "count": 0}, {"type": "CASH_OUT", "count": 578}, {"type": "DEBIT", "count": 0}, {"type": "PAYMENT", "count": 0}, {"type": "TRANSFER", "count": 564}], "rateType": [{"type": "CASH_IN", "rate": 0.0}, {"type": "CASH_OUT", "rate": 0.15469394418706728}, {"type": "DEBIT", "rate": 0.0}, {"type": "PAYMENT", "rate": 0.0}, {"type": "TRANSFER", "rate": 0.6501216096273328}], "volumeType": [{"type": "CASH_IN", "count": 227130}, {"type": "CASH_OUT", "count": 373641}, {"type": "DEBIT", "count": 7178}, {"type": "PAYMENT", "count": 353873}, {"type": "TRANSFER", "count": 86753}], "fraudSteps": [{"step": 1, "fraud": 16}, {"step": 2, "fraud": 8}, {"step": 3, "fraud": 4}, {"step": 4, "fraud": 10}, {"step": 5, "fraud": 6}, {"step": 6, "fraud": 22}, {"step": 7, "fraud": 12}, {"step": 8, "fraud": 12}, {"step": 9, "fraud": 19}, {"step": 10, "fraud": 11}, {"step": 11, "fraud": 7}, {"step": 12, "fraud": 14}, {"step": 13, "fraud": 14}, {"step": 14, "fraud": 12}, {"step": 15, "fraud": 20}, {"step": 16, "fraud": 10}, {"step": 17, "fraud": 7}, {"step": 18, "fraud": 16}, {"step": 19, "fraud": 11}, {"step": 20, "fraud": 4}, {"step": 21, "fraud": 5}, {"step": 22, "fraud": 23}, {"step": 23, "fraud": 2}, {"step": 24, "fraud": 6}, {"step": 25, "fraud": 18}, {"step": 26, "fraud": 12}, {"step": 27, "fraud": 8}, {"step": 28, "fraud": 4}, {"step": 29, "fraud": 4}, {"step": 30, "fraud": 8}, {"step": 31, "fraud": 12}, {"step": 32, "fraud": 12}, {"step": 33, "fraud": 12}, {"step": 34, "fraud": 22}, {"step": 35, "fraud": 15}, {"step": 36, "fraud": 19}, {"step": 37, "fraud": 13}, {"step": 38, "fraud": 16}, {"step": 39, "fraud": 12}, {"step": 40, "fraud": 14}, {"step": 41, "fraud": 12}, {"step": 42, "fraud": 14}, {"step": 43, "fraud": 13}, {"step": 44, "fraud": 8}, {"step": 45, "fraud": 16}, {"step": 46, "fraud": 14}, {"step": 47, "fraud": 21}, {"step": 48, "fraud": 10}, {"step": 49, "fraud": 4}, {"step": 50, "fraud": 6}, {"step": 51, "fraud": 14}, {"step": 52, "fraud": 8}, {"step": 53, "fraud": 10}, {"step": 54, "fraud": 4}, {"step": 55, "fraud": 12}, {"step": 56, "fraud": 18}, {"step": 57, "fraud": 6}, {"step": 58, "fraud": 20}, {"step": 59, "fraud": 20}, {"step": 60, "fraud": 12}, {"step": 61, "fraud": 14}, {"step": 62, "fraud": 8}, {"step": 63, "fraud": 8}, {"step": 64, "fraud": 18}, {"step": 65, "fraud": 20}, {"step": 66, "fraud": 24}, {"step": 67, "fraud": 6}, {"step": 68, "fraud": 18}, {"step": 69, "fraud": 20}, {"step": 70, "fraud": 6}, {"step": 71, "fraud": 20}, {"step": 72, "fraud": 14}, {"step": 73, "fraud": 8}, {"step": 74, "fraud": 22}, {"step": 75, "fraud": 8}, {"step": 76, "fraud": 4}, {"step": 77, "fraud": 10}, {"step": 78, "fraud": 10}, {"step": 79, "fraud": 10}, {"step": 80, "fraud": 10}, {"step": 81, "fraud": 10}, {"step": 82, "fraud": 10}, {"step": 83, "fraud": 12}, {"step": 84, "fraud": 16}, {"step": 85, "fraud": 14}, {"step": 86, "fraud": 18}, {"step": 87, "fraud": 6}, {"step": 88, "fraud": 8}, {"step": 89, "fraud": 6}, {"step": 90, "fraud": 16}, {"step": 91, "fraud": 8}, {"step": 92, "fraud": 10}, {"step": 93, "fraud": 16}, {"step": 94, "fraud": 12}, {"step": 95, "fraud": 8}], "amountBands": [{"band": "(0.099, 4220.57]", "fraud": 36, "legitimate": 104823}, {"band": "(4220.57, 9073.24]", "fraud": 12, "legitimate": 104844}, {"band": "(9073.24, 16245.618]", "fraud": 38, "legitimate": 104820}, {"band": "(16245.618, 33790.7]", "fraud": 85, "legitimate": 104772}, {"band": "(33790.7, 76343.33]", "fraud": 92, "legitimate": 104766}, {"band": "(76343.33, 125528.736]", "fraud": 94, "legitimate": 104763}, {"band": "(125528.736, 181279.868]", "fraud": 72, "legitimate": 104785}, {"band": "(181279.868, 252361.842]", "fraud": 58, "legitimate": 104800}, {"band": "(252361.842, 373075.378]", "fraud": 106, "legitimate": 104751}, {"band": "(373075.378, 10000000.0]", "fraud": 549, "legitimate": 104309}], "models": [{"model": "XGBoost", "precision": 0.0342019543973941, "recall": 1.0, "f1": 0.0661417322834645, "pr_auc": 0.5526483328472105, "roc_auc": 0.9605925568425568}, {"model": "Logistic Regression - Balanced", "precision": 0.0352289884247609, "recall": 1.0, "f1": 0.0680602819640252, "pr_auc": 0.3961116635156395, "roc_auc": 0.9672726297726296}, {"model": "Logistic Regression", "precision": 0.0352289884247609, "recall": 1.0, "f1": 0.0680602819640252, "pr_auc": 0.3961116635156395, "roc_auc": 0.9672726297726296}, {"model": "LightGBM", "precision": 0.011686143572621, "recall": 1.0, "f1": 0.0231023102310231, "pr_auc": 0.3788403402575828, "roc_auc": 0.9319204472329472}, {"model": "Random Forest", "precision": 0.0341908173233474, "recall": 1.0, "f1": 0.0661209068010075, "pr_auc": 0.0686197592299246, "roc_auc": 0.9114966752466752}, {"model": "Random Forest - Balanced", "precision": 0.0307422046552481, "recall": 1.0, "f1": 0.0596506178099701, "pr_auc": 0.0647147123663431, "roc_auc": 0.9061416773916772}, {"model": "Decision Tree", "precision": 0.0351994636272209, "recall": 1.0, "f1": 0.0680051813471502, "pr_auc": 0.0351994636272209, "roc_auc": 0.8379504504504505}, {"model": "Gradient Boosting", "precision": 0.0101437966781852, "recall": 0.8666666666666667, "f1": 0.0200528867342441, "pr_auc": 0.0103494429307767, "roc_auc": 0.4333333333333333}, {"model": "Dummy Classifier", "precision": 0.0, "recall": 0.0, "f1": 0.0, "pr_auc": 0.011686143572621, "roc_auc": 0.5}], "risk": [{"Risk_Category": "Low", "Transactions": 12000, "Average_Risk_Score": 0.1177322642, "Maximum_Risk_Score": 24.0032272069, "Investigation_Required": 0}, {"Risk_Category": "Medium", "Transactions": 8, "Average_Risk_Score": 34.4695404428, "Maximum_Risk_Score": 47.5792374466, "Investigation_Required": 0}, {"Risk_Category": "High", "Transactions": 5494, "Average_Risk_Score": 85.6074480057, "Maximum_Risk_Score": 96.9997498324, "Investigation_Required": 0}, {"Risk_Category": "Critical", "Transactions": 468, "Average_Risk_Score": 98.6270651281, "Maximum_Risk_Score": 99.9999999979, "Investigation_Required": 468}], "temporal": [{"Validation_Period": "Period_2", "Training_Periods": "Period_1", "Training_Transactions": 492483, "Validation_Transactions": 272795, "Validation_Fraud": 215, "Precision": 0.0166463662, "Recall": 0.3813953488, "F1": 0.0319004085, "PR_AUC": 0.0935286054, "ROC_AUC": 0.9209178957}, {"Validation_Period": "Period_3", "Training_Periods": "Period_1, Period_2", "Training_Transactions": 765278, "Validation_Transactions": 265057, "Validation_Fraud": 216, "Precision": 0.007079571, "Recall": 0.7731481481, "F1": 0.0140306658, "PR_AUC": 0.153033695, "ROC_AUC": 0.9271487596}, {"Validation_Period": "Period_4", "Training_Periods": "Period_1, Period_2, Period_3", "Training_Transactions": 1030335, "Validation_Transactions": 270, "Validation_Fraud": 270, "Precision": 1.0, "Recall": 0.9444444444, "F1": 0.9714285714, "PR_AUC": null, "ROC_AUC": null}, {"Validation_Period": "Period_5", "Training_Periods": "Period_1, Period_2, Period_3, Period_4", "Training_Transactions": 1030605, "Validation_Transactions": 17970, "Validation_Fraud": 210, "Precision": 0.0352348993, "Recall": 1.0, "F1": 0.0680713128, "PR_AUC": 0.3959912555, "ROC_AUC": 0.9672707529}], "stress": [{"Scenario": "Baseline", "Transactions": 17970, "Fraud_Rate": 0.0116861436, "Precision": 0.0352348993, "Recall": 1.0, "F1": 0.0680713128, "PR_AUC": 0.3959912555, "ROC_AUC": 0.9672707529}, {"Scenario": "Increased_Fraud_Prevalence", "Transactions": 18180, "Fraud_Rate": 0.0231023102, "Precision": 0.0680713128, "Recall": 1.0, "F1": 0.1274658574, "PR_AUC": 0.5160137387, "ROC_AUC": 0.9672707529}, {"Scenario": "Reduced_Fraud_Prevalence", "Transactions": 17865, "Fraud_Rate": 0.0058774139, "Precision": 0.0179333903, "Recall": 1.0, "F1": 0.0352348993, "PR_AUC": 0.3042008937, "ROC_AUC": 0.9683467396}, {"Scenario": "Increased_Transaction_Amounts", "Transactions": 17970, "Fraud_Rate": 0.0116861436, "Precision": 0.0352348993, "Recall": 1.0, "F1": 0.0680713128, "PR_AUC": 0.3327929257, "ROC_AUC": 0.9636049442}, {"Scenario": "Reduced_Transaction_Amounts", "Transactions": 17970, "Fraud_Rate": 0.0116861436, "Precision": 0.0352289884, "Recall": 1.0, "F1": 0.068060282, "PR_AUC": 0.4630598338, "ROC_AUC": 0.9644860039}], "importance": [{"feature": "step", "value": 0.1450227418093882}, {"feature": "is_transfer", "value": 0.1316053530440111}, {"feature": "amount_log", "value": 0.1093080120841026}, {"feature": "amount", "value": 0.1089129850588644}, {"feature": "hour", "value": 0.0993649925409309}, {"feature": "day_of_week", "value": 0.0696278571215346}, {"feature": "is_payment", "value": 0.0692759982406416}, {"feature": "day", "value": 0.0615728262242702}, {"feature": "destination_unique_senders", "value": 0.0554781679163204}, {"feature": "destination_transaction_count", "value": 0.0533250386981294}, {"feature": "is_cash_in", "value": 0.0479329366508038}, {"feature": "is_cash_out", "value": 0.0469560442812467}]};const blue='#38bdf8',red='#fb7185',green='#34d399',gold='#fbbf24',purple='#a78bfa';
+const base={paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{color:'#dbe7f5'},margin:{l:55,r:18,t:15,b:70},xaxis:{gridcolor:'#26364e'},yaxis:{gridcolor:'#26364e'},legend:{orientation:'h',y:-.25}};
+function draw(id,traces,extra={}){const el=document.getElementById(id);if(!traces.length||!traces[0].x||!traces[0].x.length){el.innerHTML='<p class="muted">No chart data available.</p>';return}Plotly.newPlot(el,traces,Object.assign({},base,extra),{responsive:true,displaylogo:false})}
+draw('fraudType',[{x:D.fraudType.map(d=>d.type),y:D.fraudType.map(d=>d.count),type:'bar',marker:{color:red}}],{yaxis:{title:'Fraud transactions'}});
+draw('rateType',[{x:D.rateType.map(d=>d.type),y:D.rateType.map(d=>d.rate),type:'bar',marker:{color:gold}}],{yaxis:{title:'Fraud rate (%)'}});
+draw('volumeType',[{x:D.volumeType.map(d=>d.type),y:D.volumeType.map(d=>d.count),type:'bar',marker:{color:blue}}],{yaxis:{title:'Transactions'}});
+draw('fraudSteps',[{x:D.fraudSteps.map(d=>d.step),y:D.fraudSteps.map(d=>d.fraud),type:'scatter',mode:'lines+markers',line:{color:red}}],{xaxis:{title:'Simulation step'},yaxis:{title:'Fraud transactions'}});
+draw('amountBands',[{x:D.amountBands.map(d=>d.band),y:D.amountBands.map(d=>d.legitimate),name:'Legitimate',type:'bar',marker:{color:blue}},{x:D.amountBands.map(d=>d.band),y:D.amountBands.map(d=>d.fraud),name:'Fraud',type:'bar',marker:{color:red}}],{barmode:'group',xaxis:{tickangle:-25},yaxis:{title:'Transactions'}});
+draw('modelPRAUC',[{x:D.models.map(d=>d.model),y:D.models.map(d=>d.pr_auc),type:'bar',marker:{color:purple}}],{xaxis:{tickangle:-30},yaxis:{title:'PR-AUC',range:[0,1]}});
+draw('modelPR',[{x:D.models.map(d=>d.model),y:D.models.map(d=>d.precision),name:'Precision',type:'bar',marker:{color:blue}},{x:D.models.map(d=>d.model),y:D.models.map(d=>d.recall),name:'Recall',type:'bar',marker:{color:green}}],{barmode:'group',xaxis:{tickangle:-30},yaxis:{title:'Score',range:[0,1]}});
+if(D.risk.length){const r=D.risk[0];const kc=['Risk_Level','risk_level','Risk Category','risk_category','Category','category','Risk_Band'].find(k=>r[k]!==undefined);const cc=['Count','count','Transactions','transactions','Transaction_Count','transaction_count','Total'].find(k=>r[k]!==undefined);if(kc&&cc)Plotly.newPlot('riskChart',[{labels:D.risk.map(x=>String(x[kc])),values:D.risk.map(x=>Number(x[cc])||0),type:'pie',hole:.4}],Object.assign({},base,{margin:{l:5,r:5,t:5,b:5}}),{responsive:true,displaylogo:false});else document.getElementById('riskChart').innerHTML='<p class="muted">Risk table is available; columns need mapping for this chart.</p>'}else document.getElementById('riskChart').innerHTML='<p class="muted">No risk summary output found.</p>';
+draw('importanceChart',[{x:D.importance.map(d=>d.value),y:D.importance.map(d=>d.feature),type:'bar',orientation:'h',marker:{color:purple}}],{margin:{l:160,r:20,t:15,b:40},yaxis:{autorange:'reversed'},xaxis:{title:'Importance'}});
+const T=D.temporal;if(T.length){const p=['period','Period','validation_period','Validation_Period'].find(k=>T[0][k]!==undefined);const rc=['recall','Recall'].find(k=>T[0][k]!==undefined);const fc=['f1','F1','f1_score','F1_Score'].find(k=>T[0][k]!==undefined);if(p&&rc&&fc)draw('temporalChart',[{x:T.map(r=>String(r[p])),y:T.map(r=>Number(r[rc])),name:'Recall',type:'scatter',mode:'lines+markers',line:{color:green}},{x:T.map(r=>String(r[p])),y:T.map(r=>Number(r[fc])),name:'F1-score',type:'scatter',mode:'lines+markers',line:{color:gold}}],{yaxis:{title:'Score',range:[0,1]}});else document.getElementById('temporalChart').innerHTML='<p class="muted">Temporal data is available in the table; columns need mapping for this chart.</p>'}else document.getElementById('temporalChart').innerHTML='<p class="muted">No temporal output found.</p>';
+const S=D.stress;if(S.length){const sc=['scenario','Scenario','test','Test','stress_test','Stress_Test','condition','Condition'].find(k=>S[0][k]!==undefined);const pc=['pr_auc','PR_AUC','PR-AUC'].find(k=>S[0][k]!==undefined);if(sc&&pc)draw('stressChart',[{x:S.map(r=>String(r[sc])),y:S.map(r=>Number(r[pc])),type:'bar',marker:{color:gold}}],{xaxis:{tickangle:-25},yaxis:{title:'PR-AUC',range:[0,1]}});else document.getElementById('stressChart').innerHTML='<p class="muted">Stress data is available in the table; columns need mapping for this chart.</p>'}else document.getElementById('stressChart').innerHTML='<p class="muted">No stress-test output found.</p>';
+</script></body></html>
